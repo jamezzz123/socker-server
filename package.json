@@ -5,13 +5,16 @@
   "license": "MIT",
   "dependencies": {
     "@prisma/client": "^3.13.0",
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "eiows": "^4.0.1",
     "express": "^4.17.3",
     "reflect-metadata": "^0.1.13",
     "socket.io": "^4.4.1",
     "sqlite3": "^5.0.6",
-    "typeorm": "^0.3.6"
+    "typeorm": "^0.3.6",
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@types/node": "^17.0.31",
