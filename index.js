@@ -1,13 +1,13 @@
 const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
-const { PrismaClient } = require('@prisma/client');
+// const { PrismaClient } = require('@prisma/client');
 var cors = require('cors');
-const { InMemorySessionStore } = require("./sessionStorage");
-const sessionStore = new InMemorySessionStore();
-const prisma = new PrismaClient();
+// const { InMemorySessionStore } = require("./sessionStorage");
+// const sessionStore = new InMemorySessionStore();
+const { setState, router: ClassApi } = require('./liveClassApi.js')
 
-const { uuid } = require('uuidv4');
+// const { uuid } = require('uuidv4');
 
 
 
@@ -31,47 +31,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-
-
-
-app.post("/createLiveClass", async (req, res) => {
-    const { lesson, state } = req.body;
-    console.log(req.body)
-    try {
-
-        let findings = await prisma.class.findFirst({
-            where: {
-                lesson: lesson,
-            }
-        })
-        console.log(findings)
-
-        if (findings) {
-            const result = await prisma.class.create({
-                data: {
-                    lesson,
-                    state
-                }
-            })
-
-            console.log(result)
-
-            res.send(result);
-        } else {
-            res.send(findings);
-        }
-    } catch (error) {
-        res.send(error)
-    }
-
-
-})
-
-app.get("/all", async (req, res) => {
-    let result = await prisma.class.findMany({})
-    console.log(result)
-    res.send(result)
-})
+app.use('/live-class', ClassApi);
 
 
 

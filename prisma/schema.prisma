@@ -16,9 +16,14 @@ model Class {
   // Then, we set the Prisma decorators:
   // - @id (because it's an ID)
   // - @default(autoincrement()) (default value is auto-incremented)
-  id Int @id @default(autoincrement())
-
-  lesson String
-  state  String?
-  data   String?
+  id            Int      @id @default(autoincrement())
+  school_id     String
+  class_id      String
+  subject_id    String
+  live_class_id String
+  lesson_id     String
+  state         String?
+  data          String?
+  active        Boolean  @default(value: true)
+  createdAt     DateTime @default(now())
 }
