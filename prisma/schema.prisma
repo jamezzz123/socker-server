@@ -20,7 +20,7 @@ model Class {
   school_id     String
   class_id      String
   subject_id    String
-  live_class_id String
+  live_class_id String   @unique
   lesson_id     String
   state         String?
   data          String?

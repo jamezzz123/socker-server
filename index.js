@@ -5,7 +5,7 @@ const { Server } = require("socket.io");
 var cors = require('cors');
 // const { InMemorySessionStore } = require("./sessionStorage");
 // const sessionStore = new InMemorySessionStore();
-const { setState, router: ClassApi } = require('./liveClassApi.js')
+const { setState, getState, router: ClassApi } = require('./liveClassApi.js')
 
 // const { uuid } = require('uuidv4');
 
@@ -62,10 +62,28 @@ teacher.on("connection", (socket) => {
     socket.on("join:class", async (payload) => {
         socket.join(payload.lesson);
         console.log("teacher connected");
+
+
+        const clients = await studentSocket.in(socket.handshake.query.lesson).fetchSockets();
+        let students = [];
+        for (const socket of clients) {
+            console.log('user---', socket.id);
+            students.push({ id: socket.id, name: socket.handshake.auth.name, student_class_id: socket.handshake.auth.id });
+            // console.log(socket.handshake);
+            // console.log(socket.rooms);
+            // console.log(socket.data);
+            // socket.emit(/* ... */);
+            // socket.join(/* ... */);
+            // socket.leave(/* ... */);
+            // socket.disconnect(/* ... */);
+        }
+        socket.emit('student:list', students);
     })
     socket.on('class:state', (payload) => {
         console.log(payload)
         studentSocket.to(socket.handshake.query.lesson).emit("class:state", payload);
+        console.log(payload);
+        setState(socket.handshake.query.school, socket.handshake.query.lesson, socket.handshake.query.subject, payload);
     })
     socket.on('get:student', async () => {
         const clients = await studentSocket.in(socket.handshake.query.lesson).fetchSockets();
@@ -89,19 +107,12 @@ teacher.on("connection", (socket) => {
     })
 });
 studentSocket.on("connection", (socket) => {
-    socket.on('join:class', (payload) => {
+    socket.on('join:class', async (payload) => {
         socket.join(payload.lesson);
         console.log("student connected");
-        socket.emit('class:state', {
-            index: 1,
-            outerScroll: {
-                x: 0,
-                y: 0,
-            },
-            viewer: {
-                top: 0,
-            },
-        })
+        let data = await getState(socket.handshake.query.school, socket.handshake.query.lesson, socket.handshake.query.subject);
+        console.log(data);
+        socket.emit('class:state', JSON.parse(data));
         teacher.to(payload.lesson).emit("get:student");
     })
     socket.on('disconnect', () => {
