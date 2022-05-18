@@ -19,6 +19,7 @@ model Class {
   id            Int      @id @default(autoincrement())
   school_id     String
   class_id      String
+  name          String   @default(value: "Live Class")
   subject_id    String
   live_class_id String   @unique
   lesson_id     String

@@ -84,37 +84,32 @@ router.get('/check-live-class', async (req, res) => {
     res.status(201).send(result)
 })
 
-function setState(school_id, lesson_id, subject_id, state) {
-    console.log(school_id, lesson_id, subject_id, state)
-    prisma.class.updateMany({
+function setState(live_class_id, state) {
+    console.log(live_class_id, state)
+    prisma.class.update({
         where: {
-            // school_id,
-            lesson_id: lesson_id,
-            // subject_id,
-            // live_class_id: "3d4283ee-3ebd-4c14-90e9-a43d8a604e10"
+            live_class_id,
         },
         data: {
             state: JSON.stringify(state),
         },
     }).then(result => {
-
         console.log('prisma result', result)
     }).catch(error => {
         console.log(error)
     })
 }
 
-async function getState(school_id, lesson_id, subject_id) {
-    console.log(school_id, lesson_id, subject_id)
-    let data = await prisma.class.findFirst({
+async function getState(live_class_id) {
+    let data = await prisma.class.findUnique({
         where: {
-            // school_id,
-            lesson_id: lesson_id,
-            // subject_id,
-            // live_class_id: "3d4283ee-3ebd-4c14-90e9-a43d8a604e10"
+            live_class_id: live_class_id
         }
     });
-    return data.state;
+    if (data) {
+        return JSON.parse(data.state);
+    }
+    return {};
 }
 
 

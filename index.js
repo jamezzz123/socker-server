@@ -60,11 +60,11 @@ const studentSocket = io.of("/student");
 
 teacher.on("connection", (socket) => {
     socket.on("join:class", async (payload) => {
-        socket.join(payload.lesson);
+        socket.join(payload.liveID);
         console.log("teacher connected");
 
 
-        const clients = await studentSocket.in(socket.handshake.query.lesson).fetchSockets();
+        const clients = await studentSocket.in(socket.handshake.query.live).fetchSockets();
         let students = [];
         for (const socket of clients) {
             console.log('user---', socket.id);
@@ -81,9 +81,10 @@ teacher.on("connection", (socket) => {
     })
     socket.on('class:state', (payload) => {
         console.log(payload)
-        studentSocket.to(socket.handshake.query.lesson).emit("class:state", payload);
-        console.log(payload);
-        setState(socket.handshake.query.school, socket.handshake.query.lesson, socket.handshake.query.subject, payload);
+        studentSocket.to(socket.handshake.query.live).emit("class:state", payload);
+        // console.log(payload);
+        // console.log(socket.handshake.query);
+        setState(socket.handshake.query.live, payload);
     })
     socket.on('get:student', async () => {
         const clients = await studentSocket.in(socket.handshake.query.lesson).fetchSockets();
@@ -108,16 +109,15 @@ teacher.on("connection", (socket) => {
 });
 studentSocket.on("connection", (socket) => {
     socket.on('join:class', async (payload) => {
-        socket.join(payload.lesson);
+        socket.join(payload.liveID);
         console.log("student connected");
-        let data = await getState(socket.handshake.query.school, socket.handshake.query.lesson, socket.handshake.query.subject);
-        console.log(data);
-        socket.emit('class:state', JSON.parse(data));
+        let data = await getState(socket.handshake.query.live);
+        socket.emit('class:state', data);
         teacher.to(payload.lesson).emit("get:student");
     })
     socket.on('disconnect', () => {
         console.log('student disconnect')
-        teacher.to(socket.handshake.query.lesson).emit("get:student");
+        teacher.to(socket.handshake.query.live).emit("get:student");
     })
 
 });
