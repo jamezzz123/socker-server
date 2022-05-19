@@ -14,7 +14,7 @@ const { uuid } = require('uuidv4');
 router.get('/', async (req, res) => {
     try {
         const { school_id, class_id, subject_id, lesson_id } = req.query;
-
+        console.log(school_id, class_id, subject_id, lesson_id)
         let result = await prisma.class.findMany({
             where: {
                 school_id,
@@ -26,6 +26,7 @@ router.get('/', async (req, res) => {
         res.send(result)
     } catch (error) {
         console.log(error)
+        res.status(500).send(error);
     }
 
 
