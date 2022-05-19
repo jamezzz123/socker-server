@@ -80,14 +80,11 @@ teacher.on("connection", (socket) => {
         socket.emit('student:list', students);
     })
     socket.on('class:state', (payload) => {
-        console.log(payload)
         studentSocket.to(socket.handshake.query.live).emit("class:state", payload);
-        // console.log(payload);
-        // console.log(socket.handshake.query);
         setState(socket.handshake.query.live, payload);
     })
     socket.on('get:student', async () => {
-        const clients = await studentSocket.in(socket.handshake.query.lesson).fetchSockets();
+        const clients = await studentSocket.in(socket.handshake.query.live).fetchSockets();
         let students = [];
         for (const socket of clients) {
             console.log('user---', socket.id);
@@ -102,6 +99,9 @@ teacher.on("connection", (socket) => {
         }
         socket.emit('student:list', students);
     })
+    socket.on('send:quiz-result', (payload) => {
+        studentSocket.to(socket.handshake.query.live).emit("quiz:result", payload);
+    })
 
     socket.on('disconnect', () => {
         console.log('teacher disconnect')
@@ -113,7 +113,10 @@ studentSocket.on("connection", (socket) => {
         console.log("student connected");
         let data = await getState(socket.handshake.query.live);
         socket.emit('class:state', data);
-        teacher.to(payload.lesson).emit("get:student");
+        teacher.to(payload.liveID).emit("get:student");
+    })
+    socket.on('send:quiz-data', (payload) => {
+        teacher.to(socket.handshake.query.live).emit("get:quiz-data", payload);
     })
     socket.on('disconnect', () => {
         console.log('student disconnect')

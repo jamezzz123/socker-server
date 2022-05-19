@@ -94,7 +94,7 @@ function setState(live_class_id, state) {
             state: JSON.stringify(state),
         },
     }).then(result => {
-        console.log('prisma result', result)
+        // console.log('prisma result', result)
     }).catch(error => {
         console.log(error)
     })
