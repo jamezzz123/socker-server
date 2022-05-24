@@ -37,10 +37,19 @@ router.get('/', async (req, res) => {
 router.post('/create', async (req, res) => {
     try {
         const { school_id, lesson_id, class_id, subject_id } = req.body;
-        console.log(school_id)
-        console.log(lesson_id)
-        console.log(class_id)
-        console.log(subject_id)
+        let session = await prisma.class.findFirst({
+            where: {
+                school_id,
+                class_id,
+                subject_id,
+                lesson_id,
+                active: true
+            }
+        });
+        if (session) {
+            res.status(200).send(session);
+            return
+        }
         const result = await prisma.class.create({
             data: {
                 school_id,

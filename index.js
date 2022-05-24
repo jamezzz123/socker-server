@@ -41,6 +41,7 @@ const io = new Server(httpServer, { /* options */
         origin: "*",
     }
 });
+
 const registerTeacherHandlers = require("./teacherHandlers");
 const registerStudentHandlers = require("./studentHandlers");
 
