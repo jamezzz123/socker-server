@@ -94,7 +94,7 @@ router.get('/check-live-class', async (req, res) => {
     res.status(201).send(result)
 })
 
-router.delete('/end-session', async (req, res) => {
+router.post('/end-session', async (req, res) => {
     try {
         const { live_class_id } = req.body;
         let result = await prisma.class.delete({
