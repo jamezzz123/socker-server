@@ -104,6 +104,10 @@ teacher.on("connection", (socket) => {
         studentSocket.to(socket.handshake.query.live).emit("quiz:result", payload);
     })
 
+    socket.on('end:live-class' , () =>{
+        studentSocket.to(socket.handshake.query.live).emit("end:live-class", 'e');
+    });
+
     socket.on('disconnect', () => {
         console.log('teacher disconnect')
     })
